@@ -68,7 +68,7 @@ const tree = (array) => {
       if (currentRoot === null) return;
       while (queue1.isEmpty() === false) {
         let current = queue1.front();
-        arrayReturn.push(current);
+        arrayReturn.push(current.getData());
         if (current.getLeftChild() !== null) {
           queue1.enqueue(current.getLeftChild());
         }
@@ -171,7 +171,7 @@ const tree = (array) => {
     }
     return depth;
   };
-  const prettyPrint = (node, prefix = "", isLeft = true) => {
+  const prettyPrint = (node = getTreeRoot(), prefix = "", isLeft = true) => {
     if (node.getRightChild() !== null) {
       prettyPrint(
         node.getRightChild(),
@@ -356,6 +356,7 @@ const tree = (array) => {
       getRightChild,
     };
   };
+  buildTree(sortedArray);
   //tree returns
   return {
     buildTree,
@@ -377,21 +378,71 @@ const tree = (array) => {
   };
 };
 
-let testArray = [1, 3, 6, 7, 80, 90];
-let unsortTest = [5, 6, 8, 9, 100, 60, 200, 90, 80, 53, 2];
-let tree1 = tree(unsortTest);
-let rootNode = tree1.buildTree(tree1.getArray());
-/* tree1.insert(35, rootNode); */
-function testFunc(node) {
-  console.log(node.getData());
-}
-tree1.insert(1000);
-tree1.insert(2000);
-tree1.insert(3000);
-tree1.insert(4000);
-tree1.insert(5000);
-tree1.rebalance();
-tree1.prettyPrint(tree1.getTreeRoot());
-let testNode = tree1.find(100);
-console.log(tree1.height(testNode));
-console.log(tree1.isBalanced());
+const driverScript = () => {
+  const generateRandomArray = (arrayLength = 6, maxNumberValue = 100) => {
+    const arraySize = arrayLength;
+    const randomArray = [];
+    if (arrayLength > maxNumberValue) {
+      console.log("Invalid random generator, change inputs");
+      return;
+    }
+    for (let i = 0; i < arraySize; i++) {
+      let randomNum = Math.floor(Math.random() * maxNumberValue);
+      if (randomArray.includes(randomNum)) {
+        i--;
+      } else {
+        randomArray.push(randomNum);
+      }
+    }
+    console.log(randomArray);
+    return randomArray;
+  };
+  function insertIntoTree(array, tree) {
+    for (let num in array) {
+      tree.insert(num);
+    }
+  }
+  const runScript = () => {
+    let maxRandomValue = 50;
+    let numberOfArrayItems = 20;
+    let generatedArray = generateRandomArray(
+      numberOfArrayItems,
+      maxRandomValue
+    );
+    let arrayToUnbalance = generateRandomArray(
+      Math.ceil(numberOfArrayItems / 4),
+      maxRandomValue * 1000
+    );
+    const tree2 = tree(generatedArray);
+    console.log(`Is Tree balanced: ${tree2.isBalanced()}`);
+    console.log(`------------------------Initialize tree---------------------`);
+    console.log(`LevelOrder traversal: ${tree2.levelOrder()}`);
+    console.log(`Preorder traversal: ${tree2.preorder()}`);
+    console.log(`Inorder traversal: ${tree2.inorder()}`);
+    console.log(`Postorder traversal: ${tree2.postorder()}`);
+    tree2.prettyPrint();
+
+    insertIntoTree(arrayToUnbalance, tree2);
+
+    console.log(
+      `----------------------Unbalance tree step --------------------`
+    );
+    tree2.prettyPrint();
+    console.log(`Is Tree balanced: ${tree2.isBalanced()}`);
+    tree2.rebalance();
+    console.log(
+      `----------------------balance tree step------------------------`
+    );
+    console.log(`Is Tree balanced: ${tree2.isBalanced()}`);
+    tree2.prettyPrint();
+    console.log(`LevelOrder traversal: ${tree2.levelOrder()}`);
+    console.log(`Preorder traversal: ${tree2.preorder()}`);
+    console.log(`Inorder traversal: ${tree2.inorder()}`);
+    console.log(`Postorder traversal: ${tree2.postorder()}`);
+  };
+
+  return { generateRandomArray, runScript };
+};
+
+let script = driverScript();
+script.runScript();
