@@ -4,13 +4,14 @@ const tree = (array) => {
   const deleteValue = (value) => {
     treeRoot = deleteRec(treeRoot, value);
   };
+
   const getTreeRoot = () => {
     return treeRoot;
   };
+
   const levelOrder = (callbackFunc = null) => {
     const queue1 = queue();
     let currentRoot = getTreeRoot();
-
     queue1.enqueue(currentRoot);
     let current = queue1.front();
     if (callbackFunc !== null) {
@@ -42,6 +43,53 @@ const tree = (array) => {
     }
   };
 
+  const preorder = (callback = null, root = getTreeRoot(), array = []) => {
+    let returnArray = array;
+    if (callback === null) {
+      if (root === null) return;
+      returnArray.push(root.getData());
+      preorder(callback, root.getLeftChild(), returnArray);
+      preorder(callback, root.getRightChild(), returnArray);
+      return returnArray;
+    } else {
+      if (root === null) return;
+      callback(root);
+      preorder(callback, root.getLeftChild());
+      preorder(callback, root.getRightChild());
+    }
+  };
+  const inorder = (callback = null, root = getTreeRoot(), array = []) => {
+    let returnArray = array;
+    if (callback === null) {
+      if (root === null) return;
+
+      inorder(callback, root.getLeftChild(), returnArray);
+      returnArray.push(root.getData());
+      inorder(callback, root.getRightChild(), returnArray);
+      return returnArray;
+    } else {
+      if (root === null) return;
+
+      inorder(callback, root.getLeftChild());
+      callback(root);
+      inorder(callback, root.getRightChild());
+    }
+  };
+  const postorder = (callback = null, root = getTreeRoot(), array = []) => {
+    let returnArray = array;
+    if (callback === null) {
+      if (root === null) return;
+      postorder(callback, root.getRightChild(), returnArray);
+      postorder(callback, root.getLeftChild(), returnArray);
+      returnArray.push(root.getData());
+      return returnArray;
+    } else {
+      if (root === null) return;
+      postorder(callback, root.getRightChild());
+      postorder(callback, root.getLeftChild());
+      callback(root);
+    }
+  };
   const find = (value, currentNode = treeRoot) => {
     while (value != currentNode.getData()) {
       if (currentNode !== null) {
@@ -57,6 +105,7 @@ const tree = (array) => {
     }
     return currentNode;
   };
+
   const deleteRec = (root, value) => {
     if (root == null) return root;
     if (value < root.getData()) {
@@ -74,6 +123,7 @@ const tree = (array) => {
     }
     return root;
   };
+
   function minValue(root) {
     let minv = root.getData();
     while (root.getLeftChild() != null) {
@@ -117,6 +167,7 @@ const tree = (array) => {
     treeRoot = root;
     return root;
   };
+
   const getArray = () => {
     return sortedArray;
   };
@@ -137,28 +188,36 @@ const tree = (array) => {
       }
     }
   };
+
   const queue = () => {
     let queueStack = [];
+
     const isEmpty = () => {
       if (queueStack.length === 0) {
         return true;
       }
       return false;
     };
+
     const getQueue = () => {
       return queueStack;
     };
+
     const front = () => {
       return queueStack[0];
     };
+
     const enqueue = (value) => {
       queueStack.push(value);
     };
+
     const dequeue = () => {
       queueStack.shift();
     };
+    //queue returns
     return { getQueue, enqueue, dequeue, isEmpty, front };
   };
+
   const node = (nodeData) => {
     let data = nodeData;
     let leftChild = null;
@@ -167,21 +226,27 @@ const tree = (array) => {
     const setData = (nodeData) => {
       data = nodeData;
     };
+
     const getData = () => {
       return data;
     };
+
     const setLeftChild = (child) => {
       leftChild = child;
     };
+
     const setRightChild = (child) => {
       rightChild = child;
     };
+
     const getLeftChild = () => {
       return leftChild;
     };
+
     const getRightChild = () => {
       return rightChild;
     };
+    //node returns
     return {
       setData,
       getData,
@@ -191,6 +256,7 @@ const tree = (array) => {
       getRightChild,
     };
   };
+  //tree returns
   return {
     buildTree,
     getArray,
@@ -199,7 +265,10 @@ const tree = (array) => {
     getTreeRoot,
     find,
     levelOrder,
-    queue
+    queue,
+    preorder,
+    inorder,
+    postorder,
   };
 };
 const prettyPrint = (node, prefix = "", isLeft = true) => {
@@ -225,7 +294,10 @@ let tree1 = tree(unsortTest);
 let rootNode = tree1.buildTree(tree1.getArray());
 /* tree1.insert(35, rootNode); */
 function testFunc(node) {
-console.log(node.getData());
+  console.log(node.getData());
 }
 tree1.levelOrder(testFunc);
 prettyPrint(rootNode);
+console.log(tree1.preorder());
+console.log(tree1.inorder());
+console.log(tree1.postorder());
