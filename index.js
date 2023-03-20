@@ -10,17 +10,19 @@ const tree = (array) => {
   const levelOrder = (callbackFunc = null) => {
     const queue1 = queue();
     let currentRoot = getTreeRoot();
+
     queue1.enqueue(currentRoot);
+    let current = queue1.front();
     if (callbackFunc !== null) {
       if (currentRoot === null) return;
       while (queue1.isEmpty() === false) {
-        let current = queue1.front();
         callbackFunc(current);
         if (current.getLeftChild() !== null)
           queue1.enqueue(current.getLeftChild());
         if (current.getRightChild() !== null)
           queue1.enqueue(current.getRightChild());
         queue1.dequeue();
+        current = queue1.front();
       }
     } else {
       let arrayReturn = [];
@@ -28,10 +30,12 @@ const tree = (array) => {
       while (queue1.isEmpty() === false) {
         let current = queue1.front();
         arrayReturn.push(current);
-        if (current.getLeftChild() !== null)
+        if (current.getLeftChild() !== null) {
           queue1.enqueue(current.getLeftChild());
-        if (current.getRightChild() !== null)
+        }
+        if (current.getRightChild() !== null) {
           queue1.enqueue(current.getRightChild());
+        }
         queue1.dequeue();
       }
       return arrayReturn;
@@ -150,8 +154,8 @@ const tree = (array) => {
     const enqueue = (value) => {
       queueStack.push(value);
     };
-    const dequeue = (value) => {
-      return queueStack.pop();
+    const dequeue = () => {
+      queueStack.shift();
     };
     return { getQueue, enqueue, dequeue, isEmpty, front };
   };
@@ -195,6 +199,7 @@ const tree = (array) => {
     getTreeRoot,
     find,
     levelOrder,
+    queue
   };
 };
 const prettyPrint = (node, prefix = "", isLeft = true) => {
@@ -218,6 +223,9 @@ let testArray = [1, 3, 6, 7, 8, 10, 11, 15, 20, 100];
 let unsortTest = [5, 6, 8, 9, 100, 60, 200];
 let tree1 = tree(unsortTest);
 let rootNode = tree1.buildTree(tree1.getArray());
-tree1.insert(35, rootNode);
+/* tree1.insert(35, rootNode); */
+function testFunc(node) {
+console.log(node.getData());
+}
+tree1.levelOrder(testFunc);
 prettyPrint(rootNode);
-console.log(tree1.find(9).getData());
