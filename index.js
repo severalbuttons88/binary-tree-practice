@@ -90,6 +90,50 @@ const tree = (array) => {
       callback(root);
     }
   };
+
+  const depth = (rootNode) => {
+    let currentNode = rootNode;
+    let leftDepth = 0;
+    let rightDepth = 0;
+    let checkedLeftTree = false;
+    while (currentNode !== null) {
+      if (currentNode.getLeftChild() !== null && checkedLeftTree === false) {
+        currentNode = currentNode.getLeftChild();
+        leftDepth += 1;
+      } else if (currentNode.getLeftChild() === null) {
+        checkedLeftTree = true;
+        currentNode = rootNode;
+      } else if (currentNode.getRightChild() !== null) {
+        currentNode = currentNode.getRightChild();
+        rightDepth += 1;
+      }
+      if (currentNode === null) {
+        return null;
+      }
+    }
+  };
+
+  const height = (node) => {
+    const nodeData = node.getData();
+    currentNode = getTreeRoot();
+    let height = 0;
+
+    while (node !== currentNode) {
+      if (currentNode !== null) {
+        if (nodeData < currentNode.getData()) {
+          currentNode = currentNode.getLeftChild();
+          height += 1;
+        } else {
+          currentNode = currentNode.getRightChild();
+          height += 1;
+        }
+        if (currentNode === null) {
+          return null;
+        }
+      }
+    }
+    return height;
+  };
   const find = (value, currentNode = treeRoot) => {
     while (value != currentNode.getData()) {
       if (currentNode !== null) {
@@ -269,6 +313,7 @@ const tree = (array) => {
     preorder,
     inorder,
     postorder,
+    height,
   };
 };
 const prettyPrint = (node, prefix = "", isLeft = true) => {
@@ -289,15 +334,12 @@ const prettyPrint = (node, prefix = "", isLeft = true) => {
   }
 };
 let testArray = [1, 3, 6, 7, 8, 10, 11, 15, 20, 100];
-let unsortTest = [5, 6, 8, 9, 100, 60, 200];
+let unsortTest = [5, 6, 8, 9, 100, 60, 200, 90, 80, 53, 2];
 let tree1 = tree(unsortTest);
 let rootNode = tree1.buildTree(tree1.getArray());
 /* tree1.insert(35, rootNode); */
 function testFunc(node) {
   console.log(node.getData());
 }
-tree1.levelOrder(testFunc);
 prettyPrint(rootNode);
-console.log(tree1.preorder());
-console.log(tree1.inorder());
-console.log(tree1.postorder());
+console.log(tree1.height(tree1.find(2)));
