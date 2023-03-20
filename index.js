@@ -91,48 +91,49 @@ const tree = (array) => {
     }
   };
 
-  const depth = (rootNode) => {
-    let currentNode = rootNode;
-    let leftDepth = 0;
-    let rightDepth = 0;
-    let checkedLeftTree = false;
-    while (currentNode !== null) {
-      if (currentNode.getLeftChild() !== null && checkedLeftTree === false) {
-        currentNode = currentNode.getLeftChild();
-        leftDepth += 1;
-      } else if (currentNode.getLeftChild() === null) {
-        checkedLeftTree = true;
-        currentNode = rootNode;
-      } else if (currentNode.getRightChild() !== null) {
-        currentNode = currentNode.getRightChild();
-        rightDepth += 1;
-      }
-      if (currentNode === null) {
-        return null;
-      }
-    }
-  };
-
   const height = (node) => {
+
+   let currentQueue = queue();
+   currentQueue.enqueue(node);
+   let height = -1
+   while (currentQueue.isEmpty() === false ) {
+    let queueSize = currentQueue.length();
+    for(let i = 0; i < queueSize; i++) {
+      let currentNode = currentQueue.front();
+      if(currentNode.getLeftChild() !== null) {
+        currentQueue.enqueue(currentNode.getLeftChild());
+      }
+      if(currentNode.getRightChild() !== null) {
+        currentQueue.enqueue(currentNode.getRightChild());
+      }
+      currentQueue.dequeue();
+    }
+    height++
+
+   }
+   return height;
+  }
+
+  const depth = (node) => {
     const nodeData = node.getData();
     currentNode = getTreeRoot();
-    let height = 0;
+    let depth = 0;
 
     while (node !== currentNode) {
       if (currentNode !== null) {
         if (nodeData < currentNode.getData()) {
           currentNode = currentNode.getLeftChild();
-          height += 1;
+         depth += 1;
         } else {
           currentNode = currentNode.getRightChild();
-          height += 1;
+          depthh += 1;
         }
         if (currentNode === null) {
           return null;
         }
       }
     }
-    return height;
+    return depth;
   };
   const find = (value, currentNode = treeRoot) => {
     while (value != currentNode.getData()) {
@@ -199,6 +200,7 @@ const tree = (array) => {
     return arr.concat(leftArray, rightArray);
   }
   let sortedArray = mergeArray(array);
+
   const buildTree = (array, start = 0, end = sortedArray.length) => {
     if (start > end) return null;
     let mid = parseInt((start + end) / 2);
@@ -246,7 +248,9 @@ const tree = (array) => {
     const getQueue = () => {
       return queueStack;
     };
-
+ const length = () => {
+  return queueStack.length;
+ }
     const front = () => {
       return queueStack[0];
     };
@@ -259,7 +263,7 @@ const tree = (array) => {
       queueStack.shift();
     };
     //queue returns
-    return { getQueue, enqueue, dequeue, isEmpty, front };
+    return { getQueue, enqueue, dequeue, isEmpty, front, length };
   };
 
   const node = (nodeData) => {
@@ -314,6 +318,7 @@ const tree = (array) => {
     inorder,
     postorder,
     height,
+    depth
   };
 };
 const prettyPrint = (node, prefix = "", isLeft = true) => {
@@ -342,4 +347,5 @@ function testFunc(node) {
   console.log(node.getData());
 }
 prettyPrint(rootNode);
-console.log(tree1.height(tree1.find(2)));
+let testNode = tree1.find(100);
+console.log(tree1.height(testNode));
