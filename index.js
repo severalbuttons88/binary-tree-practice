@@ -7,14 +7,35 @@ const tree = (array) => {
   const getTreeRoot = () => {
     return treeRoot;
   };
-  const levelOrder = (callbackFunc) => {
+  const levelOrder = (callbackFunc = null) => {
     const queue1 = queue();
     let currentRoot = getTreeRoot();
-    while (currentRoot !== null) {
-      
+    queue1.enqueue(currentRoot);
+    if (callbackFunc !== null) {
+      if (currentRoot === null) return;
+      while (queue1.isEmpty() === false) {
+        let current = queue1.front();
+        callbackFunc(current);
+        if (current.getLeftChild() !== null)
+          queue1.enqueue(current.getLeftChild());
+        if (current.getRightChild() !== null)
+          queue1.enqueue(current.getRightChild());
+        queue1.dequeue();
+      }
+    } else {
+      let arrayReturn = [];
+      if (currentRoot === null) return;
+      while (queue1.isEmpty() === false) {
+        let current = queue1.front();
+        arrayReturn.push(current);
+        if (current.getLeftChild() !== null)
+          queue1.enqueue(current.getLeftChild());
+        if (current.getRightChild() !== null)
+          queue1.enqueue(current.getRightChild());
+        queue1.dequeue();
+      }
+      return arrayReturn;
     }
-
-
   };
 
   const find = (value, currentNode = treeRoot) => {
@@ -98,7 +119,6 @@ const tree = (array) => {
 
   const insert = (value, nodeRoot, newNode = node()) => {
     newNode.setData(value);
-    console.log(nodeRoot);
     if (newNode.getData() < nodeRoot.getData()) {
       if (nodeRoot.getLeftChild() === null) {
         nodeRoot.setLeftChild(newNode);
@@ -120,9 +140,12 @@ const tree = (array) => {
         return true;
       }
       return false;
-    }
+    };
     const getQueue = () => {
       return queueStack;
+    };
+    const front = () => {
+      return queueStack[0];
     };
     const enqueue = (value) => {
       queueStack.push(value);
@@ -130,7 +153,7 @@ const tree = (array) => {
     const dequeue = (value) => {
       return queueStack.pop();
     };
-    return { getQueue, enqueue, dequeue, isEmpty };
+    return { getQueue, enqueue, dequeue, isEmpty, front };
   };
   const node = (nodeData) => {
     let data = nodeData;
@@ -164,7 +187,15 @@ const tree = (array) => {
       getRightChild,
     };
   };
-  return { buildTree, getArray, insert, deleteValue, getTreeRoot, find };
+  return {
+    buildTree,
+    getArray,
+    insert,
+    deleteValue,
+    getTreeRoot,
+    find,
+    levelOrder,
+  };
 };
 const prettyPrint = (node, prefix = "", isLeft = true) => {
   if (node.getRightChild() !== null) {
@@ -187,8 +218,6 @@ let testArray = [1, 3, 6, 7, 8, 10, 11, 15, 20, 100];
 let unsortTest = [5, 6, 8, 9, 100, 60, 200];
 let tree1 = tree(unsortTest);
 let rootNode = tree1.buildTree(tree1.getArray());
-console.log(rootNode.getRightChild().getData());
 tree1.insert(35, rootNode);
-
 prettyPrint(rootNode);
 console.log(tree1.find(9).getData());
