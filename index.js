@@ -1,12 +1,50 @@
 const tree = (array) => {
   let treeRoot = null;
+  let sortedArray = mergeArray(array);
 
   const deleteValue = (value) => {
     treeRoot = deleteRec(treeRoot, value);
   };
-
+  function setArray(array) {
+    sortedArray = mergeArray(array);
+  }
   const getTreeRoot = () => {
     return treeRoot;
+  };
+
+  const isBalanced = (node = getTreeRoot()) => {
+    function findTreeHeight(node) {
+      if (node === null) {
+        return 0;
+      } else {
+        return (
+          Math.max(
+            findTreeHeight(node.getLeftChild()),
+            findTreeHeight(node.getRightChild())
+          ) + 1
+        );
+      }
+    }
+
+    if (node === null) {
+      return true;
+    }
+    let leftHeight = findTreeHeight(node.getLeftChild());
+    let rightHeight = findTreeHeight(node.getRightChild());
+    if (
+      Math.abs(leftHeight - rightHeight) <= 1 &&
+      isBalanced(node.getLeftChild()) === true &&
+      isBalanced(node.getRightChild()) === true
+    ) {
+      //gets height difference, if diff > 1 for each child also return true
+      return true;
+    }
+    return false;
+  };
+  const rebalance = () => {
+    const nodeValueArray = inorder();
+    setArray(nodeValueArray);
+    buildTree(nodeValueArray);
   };
 
   const levelOrder = (callbackFunc = null) => {
@@ -92,27 +130,25 @@ const tree = (array) => {
   };
 
   const height = (node) => {
-
-   let currentQueue = queue();
-   currentQueue.enqueue(node);
-   let height = -1
-   while (currentQueue.isEmpty() === false ) {
-    let queueSize = currentQueue.length();
-    for(let i = 0; i < queueSize; i++) {
-      let currentNode = currentQueue.front();
-      if(currentNode.getLeftChild() !== null) {
-        currentQueue.enqueue(currentNode.getLeftChild());
+    let currentQueue = queue();
+    currentQueue.enqueue(node);
+    let height = -1;
+    while (currentQueue.isEmpty() === false) {
+      let queueSize = currentQueue.length();
+      for (let i = 0; i < queueSize; i++) {
+        let currentNode = currentQueue.front();
+        if (currentNode.getLeftChild() !== null) {
+          currentQueue.enqueue(currentNode.getLeftChild());
+        }
+        if (currentNode.getRightChild() !== null) {
+          currentQueue.enqueue(currentNode.getRightChild());
+        }
+        currentQueue.dequeue();
       }
-      if(currentNode.getRightChild() !== null) {
-        currentQueue.enqueue(currentNode.getRightChild());
-      }
-      currentQueue.dequeue();
+      height++;
     }
-    height++
-
-   }
-   return height;
-  }
+    return height;
+  };
 
   const depth = (node) => {
     const nodeData = node.getData();
@@ -123,7 +159,7 @@ const tree = (array) => {
       if (currentNode !== null) {
         if (nodeData < currentNode.getData()) {
           currentNode = currentNode.getLeftChild();
-         depth += 1;
+          depth += 1;
         } else {
           currentNode = currentNode.getRightChild();
           depthh += 1;
@@ -134,6 +170,23 @@ const tree = (array) => {
       }
     }
     return depth;
+  };
+  const prettyPrint = (node, prefix = "", isLeft = true) => {
+    if (node.getRightChild() !== null) {
+      prettyPrint(
+        node.getRightChild(),
+        `${prefix}${isLeft ? "│   " : "    "}`,
+        false
+      );
+    }
+    console.log(`${prefix}${isLeft ? "└── " : "┌── "}${node.getData()}`);
+    if (node.getLeftChild() !== null) {
+      prettyPrint(
+        node.getLeftChild(),
+        `${prefix}${isLeft ? "    " : "│   "}`,
+        true
+      );
+    }
   };
   const find = (value, currentNode = treeRoot) => {
     while (value != currentNode.getData()) {
@@ -199,7 +252,6 @@ const tree = (array) => {
     }
     return arr.concat(leftArray, rightArray);
   }
-  let sortedArray = mergeArray(array);
 
   const buildTree = (array, start = 0, end = sortedArray.length) => {
     if (start > end) return null;
@@ -218,7 +270,7 @@ const tree = (array) => {
     return sortedArray;
   };
 
-  const insert = (value, nodeRoot, newNode = node()) => {
+  const insert = (value, nodeRoot = getTreeRoot(), newNode = node()) => {
     newNode.setData(value);
     if (newNode.getData() < nodeRoot.getData()) {
       if (nodeRoot.getLeftChild() === null) {
@@ -248,9 +300,9 @@ const tree = (array) => {
     const getQueue = () => {
       return queueStack;
     };
- const length = () => {
-  return queueStack.length;
- }
+    const length = () => {
+      return queueStack.length;
+    };
     const front = () => {
       return queueStack[0];
     };
@@ -318,27 +370,14 @@ const tree = (array) => {
     inorder,
     postorder,
     height,
-    depth
+    depth,
+    isBalanced,
+    rebalance,
+    prettyPrint,
   };
 };
-const prettyPrint = (node, prefix = "", isLeft = true) => {
-  if (node.getRightChild() !== null) {
-    prettyPrint(
-      node.getRightChild(),
-      `${prefix}${isLeft ? "│   " : "    "}`,
-      false
-    );
-  }
-  console.log(`${prefix}${isLeft ? "└── " : "┌── "}${node.getData()}`);
-  if (node.getLeftChild() !== null) {
-    prettyPrint(
-      node.getLeftChild(),
-      `${prefix}${isLeft ? "    " : "│   "}`,
-      true
-    );
-  }
-};
-let testArray = [1, 3, 6, 7, 8, 10, 11, 15, 20, 100];
+
+let testArray = [1, 3, 6, 7, 80, 90];
 let unsortTest = [5, 6, 8, 9, 100, 60, 200, 90, 80, 53, 2];
 let tree1 = tree(unsortTest);
 let rootNode = tree1.buildTree(tree1.getArray());
@@ -346,6 +385,13 @@ let rootNode = tree1.buildTree(tree1.getArray());
 function testFunc(node) {
   console.log(node.getData());
 }
-prettyPrint(rootNode);
+tree1.insert(1000);
+tree1.insert(2000);
+tree1.insert(3000);
+tree1.insert(4000);
+tree1.insert(5000);
+tree1.rebalance();
+tree1.prettyPrint(tree1.getTreeRoot());
 let testNode = tree1.find(100);
 console.log(tree1.height(testNode));
+console.log(tree1.isBalanced());
